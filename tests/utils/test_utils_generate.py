@@ -70,6 +70,31 @@ def test_utils_gen_jwt_appengine(astarte_env_vars):
     assert required_claim in decoded_token
 
 
+def test_utils_gen_jwt_appengine_with_custom_claims(astarte_env_vars):
+
+    realm = astarte_env_vars["realm"]
+    private_key_dir = _get_private_key(realm)
+
+    claims = [
+        "appengine:GET::.*",
+        "appengine:POST::.*",
+    ]
+
+    arg_list = ["astartectl", "utils", "gen-jwt", "appengine", "-k", private_key_dir]
+    for claim in claims:
+        arg_list.extend(["-c", claim])
+
+    sample_data_result = subprocess.run(arg_list, capture_output=True, text=True)
+    token = sample_data_result.stdout.strip()
+
+    decoded_token = jwt.decode(token, options={"verify_signature": False})
+
+    required_claim = "a_aea"
+
+    assert required_claim in decoded_token
+    assert decoded_token["a_aea"] == ["GET::.*", "POST::.*"]
+
+
 def test_utils_gen_jwt_pairing(astarte_env_vars):
 
     realm = astarte_env_vars["realm"]
@@ -83,6 +108,31 @@ def test_utils_gen_jwt_pairing(astarte_env_vars):
     required_claim = "a_pa"
 
     assert required_claim in decoded_token
+
+
+def test_utils_gen_jwt_pairing_with_custom_claims(astarte_env_vars):
+
+    realm = astarte_env_vars["realm"]
+    private_key_dir = _get_private_key(realm)
+
+    claims = [
+        "pairing:GET::*",
+        "pairing:POST::*",
+    ]
+
+    arg_list = ["astartectl", "utils", "gen-jwt", "pairing", "-k", private_key_dir]
+    for claim in claims:
+        arg_list.extend(["-c", claim])
+
+    sample_data_result = subprocess.run(arg_list, capture_output=True, text=True)
+    token = sample_data_result.stdout.strip()
+
+    decoded_token = jwt.decode(token, options={"verify_signature": False})
+
+    required_claim = "a_pa"
+
+    assert required_claim in decoded_token
+    assert decoded_token["a_pa"] == ["GET::*", "POST::*"]
 
 
 def test_utils_gen_jwt_housekeeping(astarte_env_vars):
@@ -101,6 +151,31 @@ def test_utils_gen_jwt_housekeeping(astarte_env_vars):
     assert required_claim in decoded_token
 
 
+def test_utils_gen_jwt_housekeeping_with_custom_claims(astarte_env_vars):
+
+    realm = astarte_env_vars["realm"]
+    private_key_dir = _get_private_key(realm)
+
+    claims = [
+        "housekeeping:GET::*",
+        "housekeeping:POST::*",
+    ]
+
+    arg_list = ["astartectl", "utils", "gen-jwt", "housekeeping", "-k", private_key_dir]
+    for claim in claims:
+        arg_list.extend(["-c", claim])
+
+    sample_data_result = subprocess.run(arg_list, capture_output=True, text=True)
+    token = sample_data_result.stdout.strip()
+
+    decoded_token = jwt.decode(token, options={"verify_signature": False})
+
+    required_claim = "a_ha"
+
+    assert required_claim in decoded_token
+    assert decoded_token["a_ha"] == ["GET::*", "POST::*"]
+
+
 def test_utils_gen_jwt_channels(astarte_env_vars):
 
     realm = astarte_env_vars["realm"]
@@ -114,6 +189,28 @@ def test_utils_gen_jwt_channels(astarte_env_vars):
     required_claim = "a_ch"
 
     assert required_claim in decoded_token
+
+
+def test_utils_gen_jwt_channels_with_custom_claims(astarte_env_vars):
+
+    realm = astarte_env_vars["realm"]
+    private_key_dir = _get_private_key(realm)
+
+    claims = ["JOIN::.*", "WATCH::.*"]
+
+    arg_list = ["astartectl", "utils", "gen-jwt", "channels", "-k", private_key_dir]
+    for claim in claims:
+        arg_list.extend(["-c", claim])
+
+    sample_data_result = subprocess.run(arg_list, capture_output=True, text=True)
+    token = sample_data_result.stdout.strip()
+
+    decoded_token = jwt.decode(token, options={"verify_signature": False})
+
+    required_claim = "a_ch"
+
+    assert required_claim in decoded_token
+    assert decoded_token["a_ch"] == ["JOIN::.*", "WATCH::.*"]
 
 
 def _get_private_key(realm_name):
