@@ -1,0 +1,7 @@
+{
+    "name": "test_invalid_trigger",
+    "action": {
+      "http_url": "http://localhost:4000",
+      "http_method": "post"
+    }
+}
